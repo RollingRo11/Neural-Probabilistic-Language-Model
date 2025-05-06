@@ -15,7 +15,6 @@ def main():
     names = model.generate_names(num_names=10)
     for i, name in enumerate(names, 1):
         print(f"{i}. {name}")
-    
-
+   
 if __name__ == "__main__":
     main()

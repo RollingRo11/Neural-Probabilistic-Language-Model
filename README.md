@@ -1,6 +1,9 @@
 # Neural-Probabilistic-Language-Model
 **Python implementation of "A Neural Probabilistic Language Model" (Bengio et. al.)**
 
+Read the paper [here](https://www.jmlr.org/papers/volume3/bengio03a/bengio03a.pdf)! (My annotated version
+is also in this repo).
+
 (Taken from Andrej Karpathy's [makemore](https://karpathy.ai/zero-to-hero.html) series.)
 
 
