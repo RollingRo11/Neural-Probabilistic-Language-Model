@@ -32,22 +32,23 @@ class BigramModel:
 
     def train(self, num_iterations=100, learning_rate=0.5, regularization=0.01):
         for k in range(num_iterations):
-            # Forward pass
-            x_embed = self.embedding(self.xs)  # (num, embedding_dim)
-            logits = x_embed @ self.W  # (num, vocab_size)
-            probs = F.softmax(logits, dim=1)  # softmax over vocab
 
-            # Loss: negative log likelihood
+            # forward
+            x_embed = self.embedding(self.xs)
+            logits = x_embed @ self.W
+            probs = F.softmax(logits, dim=1)
+
+            # -log likelihood
             loss = -probs[torch.arange(self.num), self.ys].log().mean()
             loss += regularization * (self.W**2).mean() + regularization * (self.embedding.weight**2).mean()
 
-            # Backward pass
+            # loss.backward()
             for param in [self.W, self.embedding.weight]:
                 if param.grad is not None:
                     param.grad.zero_()
             loss.backward()
 
-            # Gradient descent
+            # grad
             with torch.no_grad():
                 self.W -= learning_rate * self.W.grad
                 self.embedding.weight -= learning_rate * self.embedding.weight.grad
@@ -63,9 +64,9 @@ class BigramModel:
             out = []
             ix = 0  # Start with '.'
             while True:
-                x_embed = self.embedding(torch.tensor([ix]))  # (1, embedding_dim)
-                logits = x_embed @ self.W  # (1, vocab_size)
-                probs = F.softmax(logits, dim=1)  # (1, vocab_size)
+                x_embed = self.embedding(torch.tensor([ix]))
+                logits = x_embed @ self.W
+                probs = F.softmax(logits, dim=1)
                 ix = torch.multinomial(probs, num_samples=1, replacement=True, generator=g).item()
                 if ix == 0:
                     break
