@@ -9,7 +9,7 @@ def main():
     print(f"Longest word length: {max(len(w) for w in model.words)}")
     
     print("\ntraining...")
-    model.train(num_iterations=200)
+    model.train(num_iterations=350)
     
     print("\nmaking words:")
     names = model.generate_names(num_names=10)
