@@ -14,14 +14,41 @@ next characters.
 
 $$f(i, w_{i-1}, \cdots, w_{i-n+1}) = g(i, C(w_{i-1}), \cdots, C(w_{i-n+1}))$$
 
+Creating $C$ (embedding our data)
 ```Python
 self.embedding_dim = embedding_dim
 self.embedding = nn.Embedding(self.vocab_size, embedding_dim)
 self.W = torch.randn((embedding_dim, self.vocab_size), requires_grad=True)
 ```
 
-Finding $g(\text{our embeddings})$
+Finding $g$ of our embeddings
 ```Python
 logits = x_embed @ self.W
 probs = F.softmax(logits, dim=1)
 ```
+
+**Sampling the next character:**
+
+In the paper, this sampling is simply described as
+
+$$\text{i-th output} = P(w_t = i \mid \textit{context})$$
+
+In the code, just used `torch.multinomial` to sample what would be our $i$'th output.
+
+```Python
+x_embed = self.embedding(torch.tensor([ix]))  # (1, embedding_dim)
+logits = x_embed @ self.W  # (1, vocab_size)
+probs = F.softmax(logits, dim=1)  # (1, vocab_size)
+ix = torch.multinomial(probs, num_samples=1, replacement=True, generator=g).item()
+```
+
+**Loss:**
+As described in the paper, the loss is calculated as:
+
+$$L = \frac{1}{T} \sum_t \log f(w_t, w_{t-1}, \cdots, w_{t-n+1}; \theta) + R(\theta),$$
+
+```Python
+loss = -probs[torch.arange(self.num), self.ys].log().mean()
+loss += regularization * (self.W**2).mean() + regularization * (self.embedding.weight**2).mean()
+```
+(With regularization baked in to account for softmax bounds)
